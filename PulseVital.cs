@@ -16,12 +16,6 @@ namespace checker
             {
                 if (patient.Age < 1)
                     return new VitalThresholds(80, 160); // Infant
-                if (patient.Age < 3)
-                    return new VitalThresholds(80, 130); // Toddler
-                if (patient.Age < 6)
-                    return new VitalThresholds(80, 120); // Preschool
-                if (patient.Age < 16)
-                    return new VitalThresholds(70, 100); // School-age
             }
             return new VitalThresholds(60, 100); // Adult
         }

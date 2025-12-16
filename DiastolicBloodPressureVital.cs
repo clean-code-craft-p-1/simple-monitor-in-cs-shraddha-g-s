@@ -15,8 +15,6 @@ namespace checker
             int age = patient?.Age ?? 0;
             if (age < 13)
                 return new VitalThresholds(50, 80);    // Children
-            if (age < 18)
-                return new VitalThresholds(60, 85);    // Adolescents
             return new VitalThresholds(60, 80);        // Adults
         }
 
