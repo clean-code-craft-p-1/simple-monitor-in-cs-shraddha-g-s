@@ -1,40 +1,32 @@
 ﻿using Xunit;
 
-namespace checker.Tests
+namespace checker.UnitTests
 {
-    public class Spo2VitalTests
+    public class SpO2VitalTests
     {
-        [Fact]
-        public void Check_ReturnsNormalForNormalSpO2()
+        private static VitalThresholdConfig GetTestConfig()
         {
-            var vital = new Spo2Vital();
-            var result = vital.Check(98, null);
-            Assert.Equal(VitalLevel.Normal, result.Level);
+            // Use the helper to load the full config, then select the diastolic BP section
+            return VitalTestHelper.LoadConfig().SpO2;
+        }
+
+        [Theory]
+        [InlineData(98, 30, VitalLevel.Normal)]
+        [InlineData(90, 30, VitalLevel.Low)]
+        [InlineData(101, 30, VitalLevel.High)]
+        public void Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
+        {
+            var config = GetTestConfig();
+            var vital = new SpO2Vital(config);
+            VitalTestHelper.AssertVitalLevel(vital, value, new PatientDetails { Age = age }, expected);
         }
 
         [Fact]
-        public void Check_ReturnsLowForLowSpO2()
+        public void GetThresholds_ReturnsExpected()
         {
-            var vital = new Spo2Vital();
-            var result = vital.Check(90, null);
-            Assert.Equal(VitalLevel.Low, result.Level);
-        }
-
-        [Fact]
-        public void Check_ReturnsHighForHighSpO2()
-        {
-            var vital = new Spo2Vital();
-            var result = vital.Check(101, null);
-            Assert.Equal(VitalLevel.High, result.Level);
-        }
-
-        [Fact]
-        public void GetThresholds_ReturnsCorrectThresholds()
-        {
-            var vital = new Spo2Vital();
-            var thresholds = vital.GetThresholds(null);
-            Assert.Equal(95, thresholds.Min);
-            Assert.Equal(100, thresholds.Max);
+            var config = GetTestConfig();
+            var vital = new SpO2Vital(config);
+            VitalTestHelper.AssertThresholds(vital, new PatientDetails { Age = 30 }, 95, 100);
         }
     }
 }

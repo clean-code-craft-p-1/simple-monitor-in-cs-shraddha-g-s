@@ -9,15 +9,18 @@ namespace checker
     public class DiastolicBloodPressureVital : VitalSignBase
     {
         public override string Name => "Diastolic Blood Pressure";
-
-        public override VitalThresholds GetThresholds(PatientDetails patient)
+        public DiastolicBloodPressureVital(VitalThresholdConfig thresholdConfig)
+        : base(thresholdConfig) { }
+        public override VitalThresholds GetThresholds(PatientDetails patientDetails)
         {
-            if (patient != null)
-            {
-                if (patient.Age < 13)
-                    return new VitalThresholds(50, 80); // Children
-            }
-            return new VitalThresholds(60, 80);        // Adults
+            // If patientDetails or Age is not provided, use adult thresholds by default
+            if (patientDetails == null || patientDetails.Age == 0)
+                return new VitalThresholds(ThresholdConfig.Adult.Min, ThresholdConfig.Adult.Max);
+
+            if (patientDetails.Age < 13)
+                    return new VitalThresholds(ThresholdConfig.Child.Min, ThresholdConfig.Child.Max); // Children
+            
+            return new VitalThresholds(ThresholdConfig.Adult.Min, ThresholdConfig.Adult.Max);        // Adults
         }
     }
 

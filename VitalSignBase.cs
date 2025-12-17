@@ -8,6 +8,12 @@ namespace checker
 {
     public abstract class VitalSignBase : IVitalSign
     {
+        public readonly VitalThresholdConfig ThresholdConfig;
+
+        public VitalSignBase(VitalThresholdConfig thresholdConfig)
+        {
+            ThresholdConfig = thresholdConfig;
+        }
         public abstract string Name { get; }
         public abstract VitalThresholds GetThresholds(PatientDetails patient);
 

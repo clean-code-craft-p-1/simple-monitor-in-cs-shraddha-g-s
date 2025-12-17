@@ -1,84 +1,48 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.Json;
+
 namespace checker
 {
-
-    /*class Checker
-    {
-        public static bool VitalsOk(float temperature, int pulseRate, int spo2)
-        {
-            if(temperature >102 || temperature < 95)
-            {
-                Console.WriteLine("Temperature critical!");
-                for (int i = 0; i < 6; i++)
-                {
-                    Console.Write("\r* ");
-                    System.Threading.Thread.Sleep(1000);
-                    Console.Write("\r *");
-                    System.Threading.Thread.Sleep(1000);
-                }
-                return false;
-            }
-            else if (pulseRate < 60 || pulseRate > 100)
-            {
-                Console.WriteLine("Pulse Rate is out of range!");
-                for (int i = 0; i < 6; i++)
-                {
-                    Console.Write("\r* ");
-                    System.Threading.Thread.Sleep(1000);
-                    Console.Write("\r *");
-                    System.Threading.Thread.Sleep(1000);
-                }
-                return false;
-            }
-            else if (spo2 < 90)
-            {
-                Console.WriteLine("Oxygen Saturation out of range!");
-                for (int i = 0; i < 6; i++)
-                {
-                    Console.Write("\r* ");
-                    System.Threading.Thread.Sleep(1000);
-                    Console.Write("\r *");
-                    System.Threading.Thread.Sleep(1000);
-                }
-                return false;
-            }
-            Console.WriteLine("Vitals received within normal range");
-            Console.WriteLine("Temperature: {0} Pulse: {1}, SO2: {2}", temperature, pulseRate, spo2);
-            return true;
-        }
-    }*/
-
-
     public class Checker
     {
-        public static List<VitalResult> CheckAll(
+        private readonly VitalThresholdsConfig _thresholds;
+
+        public Checker()
+        {
+            // Load and bind config file
+            var configJson = File.ReadAllText("VitalThresholdsconfig.json");
+            _thresholds = JsonSerializer.Deserialize<VitalThresholdsConfig>(configJson)
+                ?? throw new InvalidOperationException("Failed to load vital thresholds config.");
+        }
+
+        public List<VitalResult> CheckAll(
             float temperature,
             int pulseRate,
             int spo2,
             int systolic,
             int diastolic,
-            PatientDetails patient = null)
+            PatientDetails? patient = null)
         {
             var results = new List<VitalResult>
             {
-                new TemperatureVital().Check(temperature, patient),
-                new PulseVital().Check(pulseRate, patient),
-                new Spo2Vital().Check(spo2, patient),
-                new SystolicBloodPressureVital().Check(systolic, patient),
-                new DiastolicBloodPressureVital().Check(diastolic, patient)
+                new TemperatureVital(_thresholds.Temperature).Check(temperature, patient),
+                new PulseVital(_thresholds.Pulse).Check(pulseRate, patient),
+                new SpO2Vital(_thresholds.SpO2).Check(spo2, patient),
+                new SystolicBloodPressureVital(_thresholds.Systolic).Check(systolic, patient),
+                new DiastolicBloodPressureVital(_thresholds.Diastolic).Check(diastolic, patient)
             };
             return results;
         }
 
-
-        public static bool AllVitalsNormal(List<VitalResult> results)
+        public bool AllVitalsNormal(List<VitalResult> results)
         {
             return results.All(r => r.Level == VitalLevel.Normal);
         }
 
-
-        public static List<string> GetVitalsStatusMessages(List<VitalResult> results)
+        public List<string> GetVitalsStatusMessages(List<VitalResult> results)
         {
             var messages = results
                 .Where(r => r.Level != VitalLevel.Normal)
@@ -88,7 +52,6 @@ namespace checker
             if (!messages.Any())
             {
                 messages.Add("Vitals received within normal range");
-                // Dynamically build the summary from all results
                 var summary = string.Join(" ", results.Select(r => $"{r.Name}: {r.Status}"));
                 messages.Add(summary);
             }
@@ -97,4 +60,3 @@ namespace checker
         }
     }
 }
-

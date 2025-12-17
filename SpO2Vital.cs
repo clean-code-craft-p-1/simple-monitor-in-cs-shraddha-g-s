@@ -6,13 +6,17 @@ using System.Threading.Tasks;
 
 namespace checker
 {
-    public class Spo2Vital : VitalSignBase
+    public class SpO2Vital : VitalSignBase
     {
         public override string Name => "SpO2";
-
-        public override VitalThresholds GetThresholds(PatientDetails patient)
+        public SpO2Vital(VitalThresholdConfig thresholdConfig)
+        : base(thresholdConfig) { }
+        public override VitalThresholds GetThresholds(PatientDetails patientDetails)
         {
-            return new VitalThresholds(95, 100);
+            // If patientDetails or Age is not provided, use adult thresholds by default
+            if (patientDetails == null || patientDetails.Age == 0)
+                return new VitalThresholds(ThresholdConfig.Adult.Min, ThresholdConfig.Adult.Max);
+            return new VitalThresholds(ThresholdConfig.Adult.Min, ThresholdConfig.Adult.Max);
         }
     }
 }

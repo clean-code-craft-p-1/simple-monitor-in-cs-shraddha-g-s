@@ -1,0 +1,48 @@
+﻿{
+  "Temperature": {
+    "Child": {
+      "Min": 96,
+      "Max": 100
+    },
+    "Adult": {
+      "Min": 95,
+      "Max": 99
+    }
+  },
+  "Pulse": {
+    "Child": {
+      "Min": 70,
+      "Max": 110
+    },
+    "Adult": {
+      "Min": 60,
+      "Max": 100
+    }
+  },
+  "SpO2": {
+    "Adult": {
+      "Min": 95,
+      "Max": 100
+    }
+  },
+  "Diastolic": {
+    "Child": {
+      "Min": 50,
+      "Max": 80
+    },
+    "Adult": {
+      "Min": 60,
+      "Max": 80
+    }
+  },
+  "Systolic": {
+    "Child": {
+      "Min": 80,
+      "Max": 115
+    },
+    "Adult": {
+      "Min": 90,
+      "Max": 120
+    }
+  }
+}

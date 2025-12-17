@@ -1,40 +1,27 @@
 ﻿using Xunit;
 
-namespace checker.Tests
+namespace checker.UnitTests
 {
     public class DiastolicBloodPressureVitalTests
     {
-        [Fact]
-        public void Check_ReturnsNormalForAdultNormalDBP()
+        private static VitalThresholdConfig GetTestConfig()
         {
-            var vital = new DiastolicBloodPressureVital();
-            var result = vital.Check(75, new PatientDetails { Age = 30 });
-            Assert.Equal(VitalLevel.Normal, result.Level);
+            // Use the helper to load the full config, then select the diastolic BP section
+            return VitalTestHelper.LoadConfig().Diastolic;
         }
 
-        [Fact]
-        public void Check_ReturnsLowForAdultLowDBP()
+        [Theory]
+        [InlineData(70, 30, VitalLevel.Normal)]
+        [InlineData(50, 30, VitalLevel.Low)]
+        [InlineData(90, 30, VitalLevel.High)]
+        [InlineData(60, 10, VitalLevel.Normal)]
+        [InlineData(40, 10, VitalLevel.Low)]
+        [InlineData(90, 10, VitalLevel.High)]
+        public void Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
         {
-            var vital = new DiastolicBloodPressureVital();
-            var result = vital.Check(50, new PatientDetails { Age = 30 });
-            Assert.Equal(VitalLevel.Low, result.Level);
-        }
-
-        [Fact]
-        public void Check_ReturnsHighForAdultHighDBP()
-        {
-            var vital = new DiastolicBloodPressureVital();
-            var result = vital.Check(90, new PatientDetails { Age = 30 });
-            Assert.Equal(VitalLevel.High, result.Level);
-        }
-
-        [Fact]
-        public void GetThresholds_ReturnsChildThresholds()
-        {
-            var vital = new DiastolicBloodPressureVital();
-            var thresholds = vital.GetThresholds(new PatientDetails { Age = 10 });
-            Assert.Equal(50, thresholds.Min);
-            Assert.Equal(80, thresholds.Max);
+            var config = GetTestConfig();
+            var vital = new DiastolicBloodPressureVital(config);
+            VitalTestHelper.AssertVitalLevel(vital, value, new PatientDetails { Age = age }, expected);
         }
     }
 }
