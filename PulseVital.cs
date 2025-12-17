@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace checker
 {
-    public class PulseVital : IVitalSign
+    public class PulseVital : VitalSignBase
     {
-        public string Name => "Pulse Rate";
+        public override string Name => "Pulse Rate";
 
-        public VitalThresholds GetThresholds(PatientDetails patient)
+        public override VitalThresholds GetThresholds(PatientDetails patient)
         {
             if (patient != null)
             {
@@ -18,16 +18,6 @@ namespace checker
                     return new VitalThresholds(80, 160); // Infant
             }
             return new VitalThresholds(60, 100); // Adult
-        }
-
-        public VitalResult Check(float value, PatientDetails patient = null)
-        {
-            var thresholds = GetThresholds(patient);
-            if (value < thresholds.Min)
-                return new VitalResult(Name, VitalLevel.Low, "Pulse too low");
-            if (value > thresholds.Max)
-                return new VitalResult(Name, VitalLevel.High, "Pulse too high");
-            return new VitalResult(Name, VitalLevel.Normal, "Pulse normal");
         }
     }
 }
