@@ -12,9 +12,11 @@ namespace checker
 
         public VitalThresholds GetThresholds(PatientDetails patient)
         {
-            int age = patient?.Age ?? 0;
-            if (age < 13)
-                return new VitalThresholds(80, 115);    // Children
+            if (patient != null)
+            {
+                if (patient.Age < 13)
+                    return new VitalThresholds(80, 115); // Children
+            }
             return new VitalThresholds(90, 120);        // Adults
         }
 
