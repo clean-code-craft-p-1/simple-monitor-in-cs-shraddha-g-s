@@ -13,11 +13,7 @@ namespace checker
 
         public override VitalThresholds GetThresholds(PatientDetails patientDetails)
         {
-            // If patientDetails or Age is not provided, use adult thresholds by default
-            if (patientDetails == null || patientDetails.Age == 0)
-                return new VitalThresholds(ThresholdConfig.Adult.Min, ThresholdConfig.Adult.Max);
-
-            if (patientDetails.Age < 12)
+            if (patientDetails != null && patientDetails.Age < 12)
                 return new VitalThresholds(ThresholdConfig.Child.Min, ThresholdConfig.Child.Max);
             return new VitalThresholds(ThresholdConfig.Adult.Min, ThresholdConfig.Adult.Max);
         }

@@ -1,27 +1,27 @@
 ﻿using Xunit;
 
+using System.Collections.Generic;
 namespace checker.UnitTests
 {
-    public class SystolicBloodPressureVitalTests
+    public class SystolicBloodPressureVitalTests : VitalTests<SystolicBloodPressureVital>
     {
-        private static VitalThresholdConfig GetTestConfig()
+        protected override VitalThresholdConfig GetTestConfig() => VitalTestHelper.LoadConfig().Systolic;
+        protected override SystolicBloodPressureVital CreateVital(VitalThresholdConfig config) => new SystolicBloodPressureVital(config);
+
+        public static IEnumerable<object[]> GetTestData()
         {
-            // Use the helper to load the full config, then select the diastolic BP section
-            return VitalTestHelper.LoadConfig().Systolic;
+            yield return new object[] { 110f, 30, VitalLevel.Normal };
+            yield return new object[] { 70f, 30, VitalLevel.Low };
+            yield return new object[] { 130f, 30, VitalLevel.High };
+            yield return new object[] { 90f, 10, VitalLevel.Normal };
+            yield return new object[] { 60f, 10, VitalLevel.Low };
+            yield return new object[] { 120f, 10, VitalLevel.High };
         }
 
         [Theory]
-        [InlineData(110, 30, VitalLevel.Normal)]
-        [InlineData(70, 30, VitalLevel.Low)]
-        [InlineData(130, 30, VitalLevel.High)]
-        [InlineData(90, 10, VitalLevel.Normal)]
-        [InlineData(60, 10, VitalLevel.Low)]
-        [InlineData(120, 10, VitalLevel.High)]
+        [MemberData(nameof(GetTestData))]
         public void Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
-        {
-            var config = GetTestConfig();
-            var vital = new SystolicBloodPressureVital(config);
-            VitalTestHelper.AssertVitalLevel(vital, value, new PatientDetails { Age = age }, expected);
-        }
+        => base.Check_ReturnsExpectedLevel_Impl(value, age, expected);
     }
+    
 }

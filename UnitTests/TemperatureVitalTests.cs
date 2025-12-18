@@ -7,26 +7,25 @@ using Xunit;
 
 namespace checker.UnitTests
 {
-    public class TemperatureVitalTests
+    public class TemperatureVitalTests : VitalTests<TemperatureVital>
     {
-        private static VitalThresholdConfig GetTestConfig()
-        {
-            // Use the helper to load the full config, then select the temperature section
-            return VitalTestHelper.LoadConfig().Temperature;
-        }
+        protected override VitalThresholdConfig GetTestConfig() => VitalTestHelper.LoadConfig().Temperature;
+        protected override TemperatureVital CreateVital(VitalThresholdConfig config) => new TemperatureVital(config);
 
-        [Theory]
-        [InlineData(98.6f, 30, VitalLevel.Normal)]
-        [InlineData(94f, 30, VitalLevel.Low)]
-        [InlineData(103f, 30, VitalLevel.High)]
-        [InlineData(98.6f, 10, VitalLevel.Normal)]
-        [InlineData(94f, 10, VitalLevel.Low)]
-        [InlineData(103f, 10, VitalLevel.High)]
-        public void Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
+        public static IEnumerable<object[]> GetTestData()
         {
-            var config = GetTestConfig();
-            var vital = new TemperatureVital(config);
-            VitalTestHelper.AssertVitalLevel(vital, value, new PatientDetails { Age = age }, expected);
+            yield return new object[] { 98.6f, 30, VitalLevel.Normal };
+            yield return new object[] { 94f, 30, VitalLevel.Low };
+            yield return new object[] { 103f, 30, VitalLevel.High };
+            yield return new object[] { 98.6f, 10, VitalLevel.Normal };
+            yield return new object[] { 94f, 10, VitalLevel.Low };
+            yield return new object[] { 103f, 10, VitalLevel.High };
         }
+        
+        [Theory]
+        [MemberData(nameof(GetTestData))]
+        public void Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
+        => base.Check_ReturnsExpectedLevel_Impl(value, age, expected);
+
     }
 }

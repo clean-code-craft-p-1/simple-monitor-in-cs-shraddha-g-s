@@ -2,32 +2,22 @@
 
 namespace checker.UnitTests
 {
-    public class SpO2VitalTests
+    public class SpO2VitalTests : VitalTests<SpO2Vital>
     {
-        private static VitalThresholdConfig GetTestConfig()
+        protected override VitalThresholdConfig GetTestConfig() => VitalTestHelper.LoadConfig().SpO2;
+        protected override SpO2Vital CreateVital(VitalThresholdConfig config) => new SpO2Vital(config);
+
+        public static IEnumerable<object[]> GetTestData()
         {
-            // Use the helper to load the full config, then select the diastolic BP section
-            return VitalTestHelper.LoadConfig().SpO2;
+            yield return new object[] { 98f, 30, VitalLevel.Normal };
+            yield return new object[] { 90f, 30, VitalLevel.Low };
+            yield return new object[] { 101f, 30, VitalLevel.High };
         }
 
         [Theory]
-        [InlineData(98, 30, VitalLevel.Normal)]
-        [InlineData(90, 30, VitalLevel.Low)]
-        [InlineData(101, 30, VitalLevel.High)]
+        [MemberData(nameof(GetTestData))]
         public void Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
-        {
-            var config = GetTestConfig();
-            var vital = new SpO2Vital(config);
-            VitalTestHelper.AssertVitalLevel(vital, value, new PatientDetails { Age = age }, expected);
-        }
-
-        [Fact]
-        public void GetThresholds_ReturnsExpected()
-        {
-            var config = GetTestConfig();
-            var vital = new SpO2Vital(config);
-            VitalTestHelper.AssertThresholds(vital, new PatientDetails { Age = 30 }, 95, 100);
-        }
+        => base.Check_ReturnsExpectedLevel_Impl(value, age, expected);
     }
 }
 
