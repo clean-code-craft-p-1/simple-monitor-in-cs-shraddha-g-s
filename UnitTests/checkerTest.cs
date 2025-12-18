@@ -1,6 +1,4 @@
 using Xunit;
-using checker;
-using System.Collections.Generic;
 
 namespace checker.UnitTests
 {

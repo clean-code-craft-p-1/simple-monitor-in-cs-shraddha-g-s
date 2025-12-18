@@ -1,6 +1,4 @@
 ﻿using Xunit;
-
-using System.Collections.Generic;
 namespace checker.UnitTests
 {
     public class SystolicBloodPressureVitalTests : VitalTests<SystolicBloodPressureVital>
@@ -23,5 +21,5 @@ namespace checker.UnitTests
         public void Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
         => base.Check_ReturnsExpectedLevel_Impl(value, age, expected);
     }
-    
+
 }

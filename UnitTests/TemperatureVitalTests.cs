@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 
 namespace checker.UnitTests
 {
@@ -21,7 +16,7 @@ namespace checker.UnitTests
             yield return new object[] { 94f, 10, VitalLevel.Low };
             yield return new object[] { 103f, 10, VitalLevel.High };
         }
-        
+
         [Theory]
         [MemberData(nameof(GetTestData))]
         public void Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)

@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit;
-namespace checker.UnitTests
+﻿namespace checker.UnitTests
 {
-  
+
     public abstract class VitalTests<TVital> where TVital : IVitalSign
     {
         protected abstract VitalThresholdConfig GetTestConfig();
