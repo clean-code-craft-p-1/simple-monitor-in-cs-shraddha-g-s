@@ -2,7 +2,7 @@
   "Temperature": {
     "Thresholds": [
       {
-        "MinAge": 0,
+        "MinAge": 1,
         "MaxAge": 12,
         "Min": 96,
         "Max": 100
@@ -18,7 +18,7 @@
   "Pulse": {
     "Thresholds": [
       {
-        "MinAge": 0,
+        "MinAge": 1,
         "MaxAge": 1,
         "Min": 70,
         "Max": 110
@@ -34,7 +34,7 @@
   "SpO2": {
     "Thresholds": [
       {
-        "MinAge": 0,
+        "MinAge": 1,
         "MaxAge": 120,
         "Min": 95,
         "Max": 100
@@ -44,7 +44,7 @@
   "Diastolic": {
     "Thresholds": [
       {
-        "MinAge": 0,
+        "MinAge": 1,
         "MaxAge": 12,
         "Min": 50,
         "Max": 80
@@ -60,7 +60,7 @@
   "Systolic": {
     "Thresholds": [
       {
-        "MinAge": 0,
+        "MinAge": 1,
         "MaxAge": 12,
         "Min": 80,
         "Max": 115

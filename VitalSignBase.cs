@@ -15,22 +15,21 @@
         public virtual string GetHighMessage() => $"{Name} above normal";
         public virtual string GetNormalMessage() => $"{Name} normal";
 
-        public virtual VitalThresholds GetThresholds(PatientDetails patient)
+        public virtual VitalThresholds GetThresholds(PatientDetails patient = null)
         {
-            var thresholds = ThresholdConfig?.Thresholds;
-
             int? age = patient?.Age;
-            SimpleThresholdConfig config = null;
+            SimpleThresholdConfig config;
 
-            if (age.HasValue && age.Value > 0)
-                config = thresholds.FirstOrDefault(t => age.Value >= t.MinAge && age.Value <= t.MaxAge);
-
-            if (config == null)
-                config = thresholds.Last(); // Fallback to first threshold
-
+            if (patient==null)
+            {
+                config = ThresholdConfig.Thresholds.Last();
+                return new VitalThresholds(config.Min, config.Max);
+            }
+            config = ThresholdConfig.Thresholds.FirstOrDefault(t => age.Value >= t.MinAge && age.Value <= t.MaxAge);
             return new VitalThresholds(config.Min, config.Max);
-        }
+            // Age not specified: use the first threshold as default
 
+        }
         public VitalResult Check(float value, PatientDetails patient = null)
         {
             var thresholds = GetThresholds(patient);
