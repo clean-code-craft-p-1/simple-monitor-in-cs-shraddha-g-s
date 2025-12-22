@@ -17,20 +17,20 @@
 
         public virtual VitalThresholds GetThresholds(PatientDetails patient)
         {
+            var thresholds = ThresholdConfig?.Thresholds;
+
             int? age = patient?.Age;
-            SimpleThresholdConfig config;
+            SimpleThresholdConfig config = null;
 
             if (age.HasValue && age.Value > 0)
-            {
-                config = ThresholdConfig.Thresholds.FirstOrDefault(t => age.Value >= t.MinAge && age.Value <= t.MaxAge);
-            }
-            else
-            {
-                // Age not specified: use the first threshold as default
-                config = ThresholdConfig.Thresholds.Last();
-            }
+                config = thresholds.FirstOrDefault(t => age.Value >= t.MinAge && age.Value <= t.MaxAge);
+
+            if (config == null)
+                config = thresholds.Last(); // Fallback to first threshold
+
             return new VitalThresholds(config.Min, config.Max);
         }
+
         public VitalResult Check(float value, PatientDetails patient = null)
         {
             var thresholds = GetThresholds(patient);

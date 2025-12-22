@@ -1,7 +1,8 @@
 using Xunit;
 using System.Collections.Generic;
+using checker;
 
-namespace checker.UnitTests
+namespace Philips.checker.UnitTests
 {
     public class CheckerTests
     {
