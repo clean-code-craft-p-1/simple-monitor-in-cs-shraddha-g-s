@@ -15,22 +15,50 @@
         public virtual string GetHighMessage() => $"{Name} above normal";
         public virtual string GetNormalMessage() => $"{Name} normal";
 
-        public virtual VitalThresholds GetThresholds(PatientDetails patient = null)
+
+        public virtual VitalThresholds GetThresholds(PatientDetails patient)
         {
-            int? age = patient?.Age;
-            SimpleThresholdConfig config;
-
-            if (patient==null)
+            // Decision 1
+            if (patient == null)
             {
-                config = ThresholdConfig.Thresholds.Last();
-                return new VitalThresholds(config.Min, config.Max);
+                var d = GetDefaultThreshold();       // First or Last per your policy
+                return new VitalThresholds(d.Min, d.Max);
             }
-            config = ThresholdConfig.Thresholds.FirstOrDefault(t => age.Value >= t.MinAge && age.Value <= t.MaxAge);
-            return new VitalThresholds(config.Min, config.Max);
-            // Age not specified: use the first threshold as default
 
+            // Decision 2 (if Age is non-nullable int and you treat 0 as “unknown”)
+            if (patient.Age == 0)
+            {
+                var d = GetDefaultThreshold();
+                return new VitalThresholds(d.Min, d.Max);
+            }
+
+            // Decision 3 (the helper contains the predicate and fallback)
+            var config = FindConfigOrDefault(patient.Age);
+            return new VitalThresholds(config.Min, config.Max);
         }
-        public VitalResult Check(float value, PatientDetails patient = null)
+
+        private SimpleThresholdConfig GetDefaultThreshold()
+        {
+            var d = ThresholdConfig.Thresholds.LastOrDefault(); // or LastOrDefault()
+            if (d == null)
+                throw new InvalidOperationException("No threshold configurations are defined.");
+            return d;
+        }
+
+        private SimpleThresholdConfig FindConfigOrDefault(int age)
+        {
+            var match = ThresholdConfig.Thresholds
+                .FirstOrDefault(t => age >= t.MinAge && age <= t.MaxAge);
+
+            if (match != null) return match;
+
+            var d = ThresholdConfig.Thresholds.LastOrDefault(); // or LastOrDefault()
+            if (d == null)
+                throw new InvalidOperationException("No threshold configurations are defined.");
+            return d;
+        }
+
+            public VitalResult Check(float value, PatientDetails patient = null)
         {
             var thresholds = GetThresholds(patient);
             if (value < thresholds.Min)
