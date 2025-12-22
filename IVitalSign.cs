@@ -2,10 +2,12 @@
 {
     public interface IVitalSign
     {
-        public string Name { get; }
-        public VitalThresholds GetThresholds(PatientDetails patientDetail);
-
-        public VitalResult Check(float value, PatientDetails patientDetail = null);
+        string Name { get; }
+        VitalResult Check(float value, PatientDetails patient = null);
+        VitalThresholds GetThresholds(PatientDetails patient);
+        string GetLowMessage();
+        string GetHighMessage();
+        string GetNormalMessage();
     }
 
 }

@@ -1,106 +1,61 @@
 ﻿using Xunit;
+using System;
 using System.Collections.Generic;
 
 namespace checker.UnitTests
 {
     public class AllVitalsTests
     {
-        // Shared helper for test data
-        private static IEnumerable<object[]> MakeTestData(params (float value, int age, VitalLevel expected)[] cases)
+        public static IEnumerable<object[]> AllVitalsTestData()
         {
-            foreach (var c in cases)
-                yield return new object[] { c.value, c.age, c.expected };
+            // name, value, age, expected
+            yield return new object[] { "Temperature", 98.6f, 30, VitalLevel.Normal };
+            yield return new object[] { "Temperature", 94f, 30, VitalLevel.Low };
+            yield return new object[] { "Temperature", 103f, 30, VitalLevel.High };
+            yield return new object[] { "Temperature", 98.6f, 10, VitalLevel.Normal };
+            yield return new object[] { "Temperature", 94f, 10, VitalLevel.Low };
+            yield return new object[] { "Temperature", 103f, 10, VitalLevel.High };
+
+            yield return new object[] { "Pulse", 70f, 30, VitalLevel.Normal };
+            yield return new object[] { "Pulse", 50f, 30, VitalLevel.Low };
+            yield return new object[] { "Pulse", 110f, 30, VitalLevel.High };
+            yield return new object[] { "Pulse", 80f, 1, VitalLevel.Normal };
+            yield return new object[] { "Pulse", 60f, 1, VitalLevel.Low };
+            yield return new object[] { "Pulse", 120f, 1, VitalLevel.High };
+
+            yield return new object[] { "SpO2", 98f, 30, VitalLevel.Normal };
+            yield return new object[] { "SpO2", 90f, 30, VitalLevel.Low };
+            yield return new object[] { "SpO2", 101f, 30, VitalLevel.High };
+
+            yield return new object[] { "Diastolic", 70f, 30, VitalLevel.Normal };
+            yield return new object[] { "Diastolic", 50f, 30, VitalLevel.Low };
+            yield return new object[] { "Diastolic", 90f, 30, VitalLevel.High };
+            yield return new object[] { "Diastolic", 60f, 10, VitalLevel.Normal };
+            yield return new object[] { "Diastolic", 40f, 10, VitalLevel.Low };
+            yield return new object[] { "Diastolic", 90f, 10, VitalLevel.High };
+
+            yield return new object[] { "Systolic", 110f, 30, VitalLevel.Normal };
+            yield return new object[] { "Systolic", 70f, 30, VitalLevel.Low };
+            yield return new object[] { "Systolic", 130f, 30, VitalLevel.High };
+            yield return new object[] { "Systolic", 90f, 10, VitalLevel.Normal };
+            yield return new object[] { "Systolic", 60f, 10, VitalLevel.Low };
+            yield return new object[] { "Systolic", 120f, 10, VitalLevel.High };
         }
 
-        // Temperature tests
-        public static IEnumerable<object[]> TemperatureTestData() => MakeTestData(
-            (98.6f, 30, VitalLevel.Normal),
-            (94f, 30, VitalLevel.Low),
-            (103f, 30, VitalLevel.High),
-            (98.6f, 10, VitalLevel.Normal),
-            (94f, 10, VitalLevel.Low),
-            (103f, 10, VitalLevel.High)
-        );
-
         [Theory]
-        [MemberData(nameof(TemperatureTestData))]
-        public void Temperature_Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
+        [MemberData(nameof(AllVitalsTestData))]
+        public void AllVitals_Check_ReturnsExpectedLevel(string vitalName, float value, int age, VitalLevel expected)
         {
-            var config = VitalTestHelper.LoadConfig().Temperature;
-            var vital = new TemperatureVital(config);
-            VitalTestHelper.AssertVitalLevel(vital, value, new PatientDetails { Age = age }, expected);
-        }
-
-        // Pulse tests
-        public static IEnumerable<object[]> PulseTestData() => MakeTestData(
-            (70f, 30, VitalLevel.Normal),
-            (50f, 30, VitalLevel.Low),
-            (110f, 30, VitalLevel.High),
-            (80f, 1, VitalLevel.Normal),
-            (60f, 1, VitalLevel.Low),
-            (120f, 1, VitalLevel.High)
-        );
-
-        [Theory]
-        [MemberData(nameof(PulseTestData))]
-        public void Pulse_Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
-        {
-            var config = VitalTestHelper.LoadConfig().Pulse;
-            var vital = new PulseVital(config);
-            VitalTestHelper.AssertVitalLevel(vital, value, new PatientDetails { Age = age }, expected);
-        }
-
-        // SpO2 tests
-        public static IEnumerable<object[]> SpO2TestData() => MakeTestData(
-            (98f, 30, VitalLevel.Normal),
-            (90f, 30, VitalLevel.Low),
-            (101f, 30, VitalLevel.High)
-        );
-
-        [Theory]
-        [MemberData(nameof(SpO2TestData))]
-        public void SpO2_Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
-        {
-            var config = VitalTestHelper.LoadConfig().SpO2;
-            var vital = new SpO2Vital(config);
-            VitalTestHelper.AssertVitalLevel(vital, value, new PatientDetails { Age = age }, expected);
-        }
-
-        // Diastolic Blood Pressure tests
-        public static IEnumerable<object[]> DiastolicTestData() => MakeTestData(
-            (70f, 30, VitalLevel.Normal),
-            (50f, 30, VitalLevel.Low),
-            (90f, 30, VitalLevel.High),
-            (60f, 10, VitalLevel.Normal),
-            (40f, 10, VitalLevel.Low),
-            (90f, 10, VitalLevel.High)
-        );
-
-        [Theory]
-        [MemberData(nameof(DiastolicTestData))]
-        public void Diastolic_Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
-        {
-            var config = VitalTestHelper.LoadConfig().Diastolic;
-            var vital = new DiastolicBloodPressureVital(config);
-            VitalTestHelper.AssertVitalLevel(vital, value, new PatientDetails { Age = age }, expected);
-        }
-
-        // Systolic Blood Pressure tests
-        public static IEnumerable<object[]> SystolicTestData() => MakeTestData(
-            (110f, 30, VitalLevel.Normal),
-            (70f, 30, VitalLevel.Low),
-            (130f, 30, VitalLevel.High),
-            (90f, 10, VitalLevel.Normal),
-            (60f, 10, VitalLevel.Low),
-            (120f, 10, VitalLevel.High)
-        );
-
-        [Theory]
-        [MemberData(nameof(SystolicTestData))]
-        public void Systolic_Check_ReturnsExpectedLevel(float value, int age, VitalLevel expected)
-        {
-            var config = VitalTestHelper.LoadConfig().Systolic;
-            var vital = new SystolicBloodPressureVital(config);
+            var config = VitalTestHelper.LoadConfig();
+            IVitalSign vital = vitalName switch
+            {
+                "Temperature" => new TemperatureVital(config.Temperature),
+                "Pulse" => new PulseVital(config.Pulse),
+                "SpO2" => new SpO2Vital(config.SpO2),
+                "Diastolic" => new DiastolicBloodPressureVital(config.Diastolic),
+                "Systolic" => new SystolicBloodPressureVital(config.Systolic),
+                _ => throw new ArgumentException("Unknown vital name")
+            };
             VitalTestHelper.AssertVitalLevel(vital, value, new PatientDetails { Age = age }, expected);
         }
     }

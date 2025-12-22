@@ -2,7 +2,7 @@
 {
     public class VitalThresholdConfig
     {
-        public SimpleThresholdConfig Child { get; set; }
-        public SimpleThresholdConfig Adult { get; set; }
+        public List<SimpleThresholdConfig> Thresholds { get; set; }
+
     }
 }

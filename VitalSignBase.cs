@@ -8,13 +8,29 @@
         {
             ThresholdConfig = thresholdConfig;
         }
+
         public abstract string Name { get; }
-        public abstract VitalThresholds GetThresholds(PatientDetails patient);
 
         public virtual string GetLowMessage() => $"{Name} below normal";
         public virtual string GetHighMessage() => $"{Name} above normal";
         public virtual string GetNormalMessage() => $"{Name} normal";
 
+        public virtual VitalThresholds GetThresholds(PatientDetails patient)
+        {
+            int? age = patient?.Age;
+            SimpleThresholdConfig config;
+
+            if (age.HasValue && age.Value > 0)
+            {
+                config = ThresholdConfig.Thresholds.FirstOrDefault(t => age.Value >= t.MinAge && age.Value <= t.MaxAge);
+            }
+            else
+            {
+                // Age not specified: use the first threshold as default
+                config = ThresholdConfig.Thresholds.Last();
+            }
+            return new VitalThresholds(config.Min, config.Max);
+        }
         public VitalResult Check(float value, PatientDetails patient = null)
         {
             var thresholds = GetThresholds(patient);
