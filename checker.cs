@@ -1,48 +1,58 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Text.Json;
 
-class Checker
+namespace checker
 {
-    public static bool VitalsOk(float temperature, int pulseRate, int spo2)
+    public class Checker
     {
-        if(temperature >102 || temperature < 95)
+        private readonly VitalThresholdsConfig _thresholds;
+
+        public Checker()
         {
-            Console.WriteLine("Temperature critical!");
-            for (int i = 0; i < 6; i++)
-            {
-                Console.Write("\r* ");
-                System.Threading.Thread.Sleep(1000);
-                Console.Write("\r *");
-                System.Threading.Thread.Sleep(1000);
-            }
-            return false;
+            // Load and bind config file
+            var configJson = File.ReadAllText("VitalThresholdsconfig.json");
+            _thresholds = JsonSerializer.Deserialize<VitalThresholdsConfig>(configJson)
+                ?? throw new InvalidOperationException("Failed to load vital thresholds config.");
         }
-        else if (pulseRate < 60 || pulseRate > 100)
+
+        public List<VitalResult> CheckAll(
+            float temperature,
+            int pulseRate,
+            int spo2,
+            int systolic,
+            int diastolic,
+            PatientDetails? patient = null)
         {
-            Console.WriteLine("Pulse Rate is out of range!");
-            for (int i = 0; i < 6; i++)
+            var results = new List<VitalResult>
             {
-                Console.Write("\r* ");
-                System.Threading.Thread.Sleep(1000);
-                Console.Write("\r *");
-                System.Threading.Thread.Sleep(1000);
-            }
-            return false;
+                new TemperatureVital(_thresholds.Temperature).Check(temperature, patient),
+                new PulseVital(_thresholds.Pulse).Check(pulseRate, patient),
+                new SpO2Vital(_thresholds.SpO2).Check(spo2, patient),
+                new SystolicBloodPressureVital(_thresholds.Systolic).Check(systolic, patient),
+                new DiastolicBloodPressureVital(_thresholds.Diastolic).Check(diastolic, patient)
+            };
+            return results;
         }
-        else if (spo2 < 90)
+
+        public bool AllVitalsNormal(List<VitalResult> results)
         {
-            Console.WriteLine("Oxygen Saturation out of range!");
-            for (int i = 0; i < 6; i++)
-            {
-                Console.Write("\r* ");
-                System.Threading.Thread.Sleep(1000);
-                Console.Write("\r *");
-                System.Threading.Thread.Sleep(1000);
-            }
-            return false;
+            return results.All(r => r.Level == VitalLevel.Normal);
         }
-        Console.WriteLine("Vitals received within normal range");
-        Console.WriteLine("Temperature: {0} Pulse: {1}, SO2: {2}", temperature, pulseRate, spo2);
-        return true;
+
+        public List<string> GetVitalsStatusMessages(List<VitalResult> results)
+        {
+            var messages = results
+                .Where(r => r.Level != VitalLevel.Normal)
+                .Select(r => $"*********\n{r.Name}: {r.Status}\n**********")
+                .ToList();
+
+            if (!messages.Any())
+            {
+                messages.Add("Vitals received within normal range");
+                var summary = string.Join(" ", results.Select(r => $"{r.Name}: {r.Status}"));
+                messages.Add(summary);
+            }
+
+            return messages;
+        }
     }
 }

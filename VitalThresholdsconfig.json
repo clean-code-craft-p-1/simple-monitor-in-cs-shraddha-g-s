@@ -1,0 +1,76 @@
+﻿{
+  "Temperature": {
+    "Thresholds": [
+      {
+        "MinAge": 1,
+        "MaxAge": 12,
+        "Min": 96,
+        "Max": 100
+      },
+      {
+        "MinAge": 13,
+        "MaxAge": 120,
+        "Min": 95,
+        "Max": 99
+      }
+    ]
+  },
+  "Pulse": {
+    "Thresholds": [
+      {
+        "MinAge": 1,
+        "MaxAge": 1,
+        "Min": 70,
+        "Max": 110
+      },
+      {
+        "MinAge": 2,
+        "MaxAge": 120,
+        "Min": 60,
+        "Max": 100
+      }
+    ]
+  },
+  "SpO2": {
+    "Thresholds": [
+      {
+        "MinAge": 1,
+        "MaxAge": 120,
+        "Min": 95,
+        "Max": 100
+      }
+    ]
+  },
+  "Diastolic": {
+    "Thresholds": [
+      {
+        "MinAge": 1,
+        "MaxAge": 12,
+        "Min": 50,
+        "Max": 80
+      },
+      {
+        "MinAge": 13,
+        "MaxAge": 120,
+        "Min": 60,
+        "Max": 80
+      }
+    ]
+  },
+  "Systolic": {
+    "Thresholds": [
+      {
+        "MinAge": 1,
+        "MaxAge": 12,
+        "Min": 80,
+        "Max": 115
+      },
+      {
+        "MinAge": 13,
+        "MaxAge": 120,
+        "Min": 90,
+        "Max": 120
+      }
+    ]
+  }
+}
